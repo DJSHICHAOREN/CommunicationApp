@@ -11,8 +11,10 @@ import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
-import com.example.communicationapp.User;
-import com.example.communicationapp.UserService;
+import com.example.communicationapp.http.Position;
+import com.example.communicationapp.http.PositionService;
+import com.example.communicationapp.http.User;
+import com.example.communicationapp.http.UserService;
 import com.example.communicationapp.util.HttpServiceCreator;
 import com.example.communicationapp.util.LocationUtil;
 import com.example.communicationapp.MainActivity;
@@ -25,11 +27,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PositionService extends Service {
+public class GetPositionService extends Service {
 
     private LocationUtil locationUtil;
+    final PositionService positionService = HttpServiceCreator.create(PositionService.class);
 
-    public PositionService(){
+
+    public GetPositionService(){
     }
 
     @Nullable
@@ -40,41 +44,47 @@ public class PositionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final UserService userService = HttpServiceCreator.create(UserService.class);
 
         locationUtil = new LocationUtil(getApplicationContext());
         locationUtil.setLocationListener(new AMapLocationListener(){
 
             @Override
             public void onLocationChanged(AMapLocation aMapLocation) {
+                if (aMapLocation != null) {
+                    if (aMapLocation.getErrorCode() == 0) {
+                        //可在其中解析amapLocation获取相应内容。
+                        double latitude = aMapLocation.getLatitude();//获取纬度
+                        double longitude = aMapLocation.getLongitude();//获取经度
+                        String street = aMapLocation.getStreet();
+                        Log.d("lwd", "获取数据成功 latitude:" + latitude
+                                + " longitude:" + longitude
+                                + " street:" + street);
+                        sendMessage(new Position(aMapLocation));
 
-                userService.getUsers().enqueue(new Callback<List<User>>() {
-                    @Override
-                    public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                        List<User> userList = response.body();
-                        if(userList != null){
-                            for(User user : userList){
-                                Log.d("lwd", "name:" + user.name);
-                            }
-                        }
+                    }else {
+                        //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
+                        Log.e("lwd","location Error, ErrCode:"
+                                + aMapLocation.getErrorCode() + ", errInfo:"
+                                + aMapLocation.getErrorInfo());
                     }
-
-                    @Override
-                    public void onFailure(Call<List<User>> call, Throwable t) {
-                        Log.d("lwd", t.getMessage());
-                    }
-                });
+                }
 
             }
         });
         locationUtil.startLocation();
 
+        createNotification();
+
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    // 创建前台服务的常驻通知
+    public void createNotification(){
 
         NotificationManager notificationManager= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         NotificationChannel channel = null;
         Intent intent1 = new Intent(this, MainActivity.class);
         PendingIntent intent2 = PendingIntent.getActivity(this, 0, intent1,0);
-
 
         Notification.Builder builder = new Notification.Builder(this);
         //Android8.0要求设置通知渠道
@@ -96,8 +106,25 @@ public class PositionService extends Service {
 
         Notification notification = builder.build();
         startForeground(123, notification);
+    }
 
-        return super.onStartCommand(intent, flags, startId);
+    public void sendMessage(Position position){
+
+        positionService.insertPosition(position).enqueue(new Callback<Position>() {
+            @Override
+            public void onResponse(Call<Position> call, Response<Position> response) {
+                Position position = response.body();
+                if(position != null){
+                    Log.d("lwd", "发送数据成功 latitude：" + position.latitude + " longitude:" + position.longitude);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Position> call, Throwable t) {
+                Log.d("lwd", t.getMessage());
+
+            }
+        });
     }
 
 }

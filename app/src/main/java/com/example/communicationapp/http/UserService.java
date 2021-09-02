@@ -1,4 +1,6 @@
-package com.example.communicationapp;
+package com.example.communicationapp.http;
+
+import com.example.communicationapp.http.User;
 
 import java.util.List;
 
