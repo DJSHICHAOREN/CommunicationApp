@@ -13,14 +13,10 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.example.communicationapp.http.Position;
 import com.example.communicationapp.http.PositionService;
-import com.example.communicationapp.http.User;
-import com.example.communicationapp.http.UserService;
 import com.example.communicationapp.util.HttpServiceCreator;
 import com.example.communicationapp.util.LocationUtil;
 import com.example.communicationapp.MainActivity;
 import com.example.communicationapp.R;
-
-import java.util.List;
 
 import androidx.annotation.Nullable;
 import retrofit2.Call;
@@ -59,14 +55,15 @@ public class GetPositionService extends Service {
                         Log.d("lwd", "获取数据成功 latitude:" + latitude
                                 + " longitude:" + longitude
                                 + " street:" + street);
-                        sendMessage(new Position(aMapLocation));
 
                     }else {
                         //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
-                        Log.e("lwd","location Error, ErrCode:"
-                                + aMapLocation.getErrorCode() + ", errInfo:"
-                                + aMapLocation.getErrorInfo());
+//                        Log.e("lwd","location Error, ErrCode:"
+//                                + aMapLocation.getErrorCode() + ", errInfo:"
+//                                + aMapLocation.getErrorInfo());
                     }
+                    sendRequest(new Position(aMapLocation));
+
                 }
 
             }
@@ -108,7 +105,7 @@ public class GetPositionService extends Service {
         startForeground(123, notification);
     }
 
-    public void sendMessage(Position position){
+    public void sendRequest(Position position){
 
         positionService.insertPosition(position).enqueue(new Callback<Position>() {
             @Override

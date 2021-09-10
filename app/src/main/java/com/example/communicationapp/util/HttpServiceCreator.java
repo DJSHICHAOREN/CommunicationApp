@@ -7,7 +7,7 @@ public class HttpServiceCreator {
 
     private static Retrofit retrofit = new Retrofit
             .Builder()
-            .baseUrl("http://10.252.112.167:8080")
+            .baseUrl("http://337d713351.eicp.vip/demo-0.0.1-SNAPSHOT/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
