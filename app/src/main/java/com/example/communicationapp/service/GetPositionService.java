@@ -7,12 +7,16 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
+import com.example.communicationapp.http.Device;
 import com.example.communicationapp.http.Position;
 import com.example.communicationapp.http.PositionService;
+import com.example.communicationapp.http.SubmitPositionParam;
+import com.example.communicationapp.http.SubmitPositionService;
 import com.example.communicationapp.util.HttpServiceCreator;
 import com.example.communicationapp.util.LocationUtil;
 import com.example.communicationapp.MainActivity;
@@ -27,7 +31,7 @@ public class GetPositionService extends Service {
 
     private LocationUtil locationUtil;
     final PositionService positionService = HttpServiceCreator.create(PositionService.class);
-
+    final SubmitPositionService submitPositionService = HttpServiceCreator.create(SubmitPositionService.class);
 
     public GetPositionService(){
     }
@@ -58,9 +62,9 @@ public class GetPositionService extends Service {
 
                     }else {
                         //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
-//                        Log.e("lwd","location Error, ErrCode:"
-//                                + aMapLocation.getErrorCode() + ", errInfo:"
-//                                + aMapLocation.getErrorInfo());
+                        Log.e("lwd","location Error, ErrCode:"
+                                + aMapLocation.getErrorCode() + ", errInfo:"
+                                + aMapLocation.getErrorInfo());
                     }
                     sendRequest(new Position(aMapLocation));
 
@@ -107,7 +111,27 @@ public class GetPositionService extends Service {
 
     public void sendRequest(Position position){
 
-        positionService.insertPosition(position).enqueue(new Callback<Position>() {
+//        positionService.insertPosition(position).enqueue(new Callback<Position>() {
+//            @Override
+//            public void onResponse(Call<Position> call, Response<Position> response) {
+//                Position position = response.body();
+//                if(position != null){
+//                    Log.d("lwd", "发送数据成功 latitude：" + position.latitude + " longitude:" + position.longitude);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Position> call, Throwable t) {
+//                Log.d("lwd", t.getMessage());
+//
+//            }
+//        });
+
+        String androidId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        SubmitPositionParam submitPositionParam = new SubmitPositionParam();
+        submitPositionParam.setDevice(new Device(androidId));
+        submitPositionParam.setPosition(position);
+        submitPositionService.submitPosition(submitPositionParam).enqueue(new Callback<Position>() {
             @Override
             public void onResponse(Call<Position> call, Response<Position> response) {
                 Position position = response.body();
@@ -119,7 +143,6 @@ public class GetPositionService extends Service {
             @Override
             public void onFailure(Call<Position> call, Throwable t) {
                 Log.d("lwd", t.getMessage());
-
             }
         });
     }

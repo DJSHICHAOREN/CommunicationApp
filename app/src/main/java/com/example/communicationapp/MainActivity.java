@@ -70,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        mAndroidId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-        Log.d("lwd", "mAndroidId:" + mAndroidId);
 
         Intent intent = new Intent(this, GetPositionService.class);
         startService(intent);

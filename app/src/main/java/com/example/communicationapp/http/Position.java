@@ -1,6 +1,7 @@
 package com.example.communicationapp.http;
 
 import com.amap.api.location.AMapLocation;
+import com.example.communicationapp.util.TimeUtil;
 
 public class Position {
     public double latitude;
@@ -40,6 +41,8 @@ public class Position {
     private String errorInfo;
     private int errorCode;
 
+    private long time;
+
     public Position(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
@@ -72,6 +75,8 @@ public class Position {
             this.locationDetail = aMapLocation.getLocationDetail();
             this.errorInfo = aMapLocation.getErrorInfo();
             this.errorCode = aMapLocation.getErrorCode();
+
+            this.time = TimeUtil.getCurrentTimeStamp();
         }
     }
 }
