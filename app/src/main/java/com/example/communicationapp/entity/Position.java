@@ -1,4 +1,4 @@
-package com.example.communicationapp.http;
+package com.example.communicationapp.entity;
 
 import com.amap.api.location.AMapLocation;
 import com.example.communicationapp.util.TimeUtil;

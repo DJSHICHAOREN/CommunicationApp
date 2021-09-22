@@ -1,4 +1,4 @@
-package com.example.communicationapp.http;
+package com.example.communicationapp.entity;
 
 import com.example.communicationapp.entity.Device;
 import com.example.communicationapp.entity.Position;

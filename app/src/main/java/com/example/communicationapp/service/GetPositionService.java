@@ -12,11 +12,10 @@ import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
-import com.example.communicationapp.http.Device;
-import com.example.communicationapp.http.Position;
+import com.example.communicationapp.entity.Device;
+import com.example.communicationapp.entity.Position;
+import com.example.communicationapp.entity.SubmitPositionParam;
 import com.example.communicationapp.http.PositionService;
-import com.example.communicationapp.http.SubmitPositionParam;
-import com.example.communicationapp.http.SubmitPositionService;
 import com.example.communicationapp.util.HttpServiceCreator;
 import com.example.communicationapp.util.LocationUtil;
 import com.example.communicationapp.MainActivity;
@@ -31,7 +30,6 @@ public class GetPositionService extends Service {
 
     private LocationUtil locationUtil;
     final PositionService positionService = HttpServiceCreator.create(PositionService.class);
-    final SubmitPositionService submitPositionService = HttpServiceCreator.create(SubmitPositionService.class);
 
     public GetPositionService(){
     }
@@ -131,7 +129,7 @@ public class GetPositionService extends Service {
         SubmitPositionParam submitPositionParam = new SubmitPositionParam();
         submitPositionParam.setDevice(new Device(androidId));
         submitPositionParam.setPosition(position);
-        submitPositionService.submitPosition(submitPositionParam).enqueue(new Callback<Position>() {
+        positionService.submitPosition(submitPositionParam).enqueue(new Callback<Position>() {
             @Override
             public void onResponse(Call<Position> call, Response<Position> response) {
                 Position position = response.body();

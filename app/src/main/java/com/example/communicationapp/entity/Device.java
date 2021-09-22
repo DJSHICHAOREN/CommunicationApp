@@ -1,4 +1,4 @@
-package com.example.communicationapp.http;
+package com.example.communicationapp.entity;
 
 public class Device {
     private String deviceId;

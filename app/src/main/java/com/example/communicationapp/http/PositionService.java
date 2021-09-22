@@ -7,7 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 
-public interface SubmitPositionService {
+public interface PositionService {
     @POST("position_device")
     Call<Position> submitPosition(@Body SubmitPositionParam submitPositionParam);
 }
