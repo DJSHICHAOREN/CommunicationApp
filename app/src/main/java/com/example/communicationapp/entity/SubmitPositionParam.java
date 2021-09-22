@@ -1,5 +1,8 @@
 package com.example.communicationapp.http;
 
+import com.example.communicationapp.entity.Device;
+import com.example.communicationapp.entity.Position;
+
 public class SubmitPositionParam {
     private Device device;
     private Position position;
