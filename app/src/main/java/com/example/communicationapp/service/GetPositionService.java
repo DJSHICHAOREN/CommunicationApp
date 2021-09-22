@@ -18,7 +18,7 @@ import com.example.communicationapp.entity.SubmitPositionParam;
 import com.example.communicationapp.http.PositionService;
 import com.example.communicationapp.util.HttpServiceCreator;
 import com.example.communicationapp.util.LocationUtil;
-import com.example.communicationapp.MainActivity;
+import com.example.communicationapp.view.MainActivity;
 import com.example.communicationapp.R;
 
 import androidx.annotation.Nullable;
@@ -42,6 +42,8 @@ public class GetPositionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+//        getSharedPreferences("", );
 
         locationUtil = new LocationUtil(getApplicationContext());
         locationUtil.setLocationListener(new AMapLocationListener(){

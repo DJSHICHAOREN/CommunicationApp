@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">CommunicationApp</string>
+    <string name="login_key">login_key</string>
+    <string name="username_key">username_key</string>
+    <string name="password_key">password_key</string>
 </resources>
