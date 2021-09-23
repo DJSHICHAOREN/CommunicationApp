@@ -15,9 +15,11 @@ import com.amap.api.location.AMapLocationListener;
 import com.example.communicationapp.entity.Device;
 import com.example.communicationapp.entity.Position;
 import com.example.communicationapp.entity.SubmitPositionParam;
+import com.example.communicationapp.entity.User;
 import com.example.communicationapp.http.PositionService;
 import com.example.communicationapp.util.HttpServiceCreator;
 import com.example.communicationapp.util.LocationUtil;
+import com.example.communicationapp.util.LoginUtil;
 import com.example.communicationapp.view.MainActivity;
 import com.example.communicationapp.R;
 
@@ -131,6 +133,10 @@ public class GetPositionService extends Service {
         SubmitPositionParam submitPositionParam = new SubmitPositionParam();
         submitPositionParam.setDevice(new Device(androidId));
         submitPositionParam.setPosition(position);
+
+        String username = LoginUtil.getUserName(this);
+        submitPositionParam.setUser(new User(username));
+
         positionService.submitPosition(submitPositionParam).enqueue(new Callback<Position>() {
             @Override
             public void onResponse(Call<Position> call, Response<Position> response) {

@@ -4,17 +4,28 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class PermissionUtil {
 
+    public static void requestBackgroundPositionPermissions(Activity activity, int requestCode){
+        String[] permissions;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            permissions = new String[]{
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION};
 
+            requestPermissions(permissions, activity, requestCode);
+        }
+    }
 
-    public static void requestPositionPermissions(Activity activity, int requestCode){
-        //权限数组（申请定位）
-        String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS};
+    public static void requestForegroundPositionPermissions(Activity activity, int requestCode){
+        String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION
+                , Manifest.permission.ACCESS_COARSE_LOCATION
+                , Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS};
+
         requestPermissions(permissions, activity, requestCode);
     }
 
