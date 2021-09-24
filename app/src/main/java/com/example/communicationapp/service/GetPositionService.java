@@ -17,6 +17,7 @@ import com.example.communicationapp.entity.Position;
 import com.example.communicationapp.entity.SubmitPositionParam;
 import com.example.communicationapp.entity.User;
 import com.example.communicationapp.http.PositionService;
+import com.example.communicationapp.util.DeviceUtil;
 import com.example.communicationapp.util.HttpServiceCreator;
 import com.example.communicationapp.util.LocationUtil;
 import com.example.communicationapp.util.LoginUtil;
@@ -113,29 +114,9 @@ public class GetPositionService extends Service {
 
     public void sendRequest(Position position){
 
-//        positionService.insertPosition(position).enqueue(new Callback<Position>() {
-//            @Override
-//            public void onResponse(Call<Position> call, Response<Position> response) {
-//                Position position = response.body();
-//                if(position != null){
-//                    Log.d("lwd", "发送数据成功 latitude：" + position.latitude + " longitude:" + position.longitude);
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Position> call, Throwable t) {
-//                Log.d("lwd", t.getMessage());
-//
-//            }
-//        });
-
-        String androidId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         SubmitPositionParam submitPositionParam = new SubmitPositionParam();
-        submitPositionParam.setDevice(new Device(androidId));
+        submitPositionParam.setDevice(DeviceUtil.getDevice(this));
         submitPositionParam.setPosition(position);
-
-        String username = LoginUtil.getUserName(this);
-        submitPositionParam.setUser(new User(username));
 
         positionService.submitPosition(submitPositionParam).enqueue(new Callback<Position>() {
             @Override

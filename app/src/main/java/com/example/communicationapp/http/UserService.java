@@ -1,5 +1,6 @@
 package com.example.communicationapp.http;
 
+import com.example.communicationapp.entity.SubmitUserParam;
 import com.example.communicationapp.entity.SubmitUserResult;
 import com.example.communicationapp.entity.User;
 
@@ -13,5 +14,5 @@ import retrofit2.http.POST;
 public interface UserService {
 
     @POST("user")
-    Call<SubmitUserResult> addUser(@Body User user);
+    Call<SubmitUserResult> addUser(@Body SubmitUserParam submitUserParam);
 }

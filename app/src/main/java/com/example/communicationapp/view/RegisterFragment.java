@@ -10,9 +10,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.communicationapp.R;
+import com.example.communicationapp.entity.SubmitUserParam;
 import com.example.communicationapp.entity.SubmitUserResult;
 import com.example.communicationapp.entity.User;
 import com.example.communicationapp.http.UserService;
+import com.example.communicationapp.util.DeviceUtil;
 import com.example.communicationapp.util.HttpServiceCreator;
 
 import androidx.annotation.NonNull;
@@ -48,28 +50,32 @@ public class RegisterFragment extends Fragment {
                 final String username = et_username.getText().toString();
                 final String password = et_password.getText().toString();
                 User user = new User(username, password);
-                userService.addUser(user).enqueue(new Callback<SubmitUserResult>() {
+                SubmitUserParam submitUserParam = new SubmitUserParam(user, DeviceUtil.getDevice(getContext()));
+                userService.addUser(submitUserParam).enqueue(new Callback<SubmitUserResult>() {
                     @Override
                     public void onResponse(Call<SubmitUserResult> call, Response<SubmitUserResult> response) {
                         SubmitUserResult submitUserResult = response.body();
                         if(submitUserResult != null){
                             Toast.makeText(getContext(), submitUserResult.getMessage(), Toast.LENGTH_SHORT).show();
 
-                            // 存储密码
-                            SharedPreferences.Editor edit = getContext()
-                                    .getSharedPreferences(getResources().getString(R.string.login_key), MODE_PRIVATE).edit();
-                            edit.putString(getResources().getString(R.string.username_key), username);
-                            edit.putString(getResources().getString(R.string.password_key), password);
-                            edit.commit();
+                            if(submitUserResult.getCode() == 1){
+                                // 存储密码
+                                SharedPreferences.Editor edit = getContext()
+                                        .getSharedPreferences(getResources().getString(R.string.login_key), MODE_PRIVATE).edit();
+                                edit.putString(getResources().getString(R.string.username_key), username);
+                                edit.putString(getResources().getString(R.string.password_key), password);
+                                edit.commit();
 
-                            // 显示UserDetailFragment
-                            Bundle args = new Bundle();
-                            args.putString(getResources().getString(R.string.username_key), username);
-                            UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(args);
-                            if(!userDetailFragment.isAdded()){
-                                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                                fragmentTransaction.replace(R.id.rl_fragment_container, userDetailFragment).commit();
+                                // 显示UserDetailFragment
+                                Bundle args = new Bundle();
+                                args.putString(getResources().getString(R.string.username_key), username);
+                                UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(args);
+                                if(!userDetailFragment.isAdded()){
+                                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                                    fragmentTransaction.replace(R.id.rl_fragment_container, userDetailFragment).commit();
+                                }
                             }
+
                         }
                         else{
                             Toast.makeText(getContext(), "由于服务器原因，注册失败", Toast.LENGTH_SHORT).show();
