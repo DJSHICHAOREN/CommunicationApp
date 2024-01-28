@@ -15,13 +15,18 @@ public class LocationUtil {
 
     public LocationUtil(Context context){
         //初始化定位
-        mLocationClient = new AMapLocationClient(context);
+        try {
+            AMapLocationClient.updatePrivacyShow(context, true, true);
+            AMapLocationClient.updatePrivacyAgree(context, true);
+            mLocationClient = new AMapLocationClient(context);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         //声明AMapLocationClientOption对象
         AMapLocationClientOption mLocationOption = new AMapLocationClientOption();
         //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-
         //设置定位间隔,单位毫秒,默认为2000ms，最低1000ms。
         mLocationOption.setInterval(1000 * 60 * 15);
 

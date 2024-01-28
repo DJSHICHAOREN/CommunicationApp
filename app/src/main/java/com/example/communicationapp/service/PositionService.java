@@ -15,8 +15,8 @@ import com.example.communicationapp.User;
 import com.example.communicationapp.UserService;
 import com.example.communicationapp.util.HttpServiceCreator;
 import com.example.communicationapp.util.LocationUtil;
-import com.example.communicationapp.MainActivity;
 import com.example.communicationapp.R;
+import com.example.communicationapp.view.MainActivity;
 
 import java.util.List;
 
