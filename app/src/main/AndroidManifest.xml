@@ -30,6 +30,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -41,7 +42,7 @@
 
         <meta-data android:name="com.amap.api.v2.apikey" android:value="2f946fef18df48afbe9f42f6fea8f113"/>
 
-        <activity android:name=".view.MainActivity">
+        <activity android:name=".view.MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,7 +50,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.GetPositionService"/>
+        <service android:name=".service.GetPositionService" android:process=":location"/>
 
         <service android:name="com.amap.api.location.APSService"></service>
 

@@ -13,6 +13,8 @@ public class LocationUtil {
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
 
+    public static LocationUtil mLocationUtil;
+
     public LocationUtil(Context context){
         //初始化定位
         try {
@@ -28,7 +30,9 @@ public class LocationUtil {
         //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         //设置定位间隔,单位毫秒,默认为2000ms，最低1000ms。
-        mLocationOption.setInterval(1000 * 60 * 15);
+//        long duration = 1000 * 60 * 15;
+        long duration = 1000 * 60;
+        mLocationOption.setInterval(duration);
 
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
@@ -47,5 +51,19 @@ public class LocationUtil {
     public void startLocation(){
         //启动定位
         mLocationClient.startLocation();
+
+    }
+
+    public void stopLocation(){
+        //启动定位
+        mLocationClient.stopLocation();
+
+    }
+
+    public static LocationUtil getInstance() {
+        if (mLocationUtil == null) {
+            mLocationUtil = new LocationUtil(ContextUtil.getContext());
+        }
+        return mLocationUtil;
     }
 }

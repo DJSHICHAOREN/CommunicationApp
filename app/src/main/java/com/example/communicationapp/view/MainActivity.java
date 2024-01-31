@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.example.communicationapp.R;
+import com.example.communicationapp.database.MyDatabaseHelper;
 import com.example.communicationapp.service.GetPositionService;
 import com.example.communicationapp.util.LoginUtil;
 import com.example.communicationapp.util.PermissionUtil;
@@ -33,15 +34,16 @@ public class MainActivity extends AppCompatActivity {
 
         // 判断展示页面
         Fragment fragment = null;
-        String username = LoginUtil.getUserName(this);
-        if(!StringUtils.isEmpty(username)){
-            Bundle bundle = new Bundle();
-            bundle.putString(getResources().getString(R.string.username_key), username);
-            fragment = UserDetailFragment.newInstance(bundle);
-        }
-        else{
-            fragment = RegisterFragment.newInstance(null);
-        }
+//        String username = LoginUtil.getUserName(this);
+//        if(!StringUtils.isEmpty(username)){
+//            Bundle bundle = new Bundle();
+//            bundle.putString(getResources().getString(R.string.username_key), username);
+//            fragment = UserDetailFragment.newInstance(bundle);
+//        }
+//        else{
+//            fragment = RegisterFragment.newInstance(null);
+//        }
+        fragment = LocationFragment.newInstance(null);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if(fragment != null && !fragment.isAdded()){

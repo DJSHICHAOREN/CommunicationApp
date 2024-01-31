@@ -7,35 +7,33 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
-import com.example.communicationapp.entity.Device;
+import com.example.communicationapp.database.MyDatabaseHelper;
+import com.example.communicationapp.database.PositionData;
 import com.example.communicationapp.entity.Position;
 import com.example.communicationapp.entity.SubmitPositionParam;
-import com.example.communicationapp.entity.User;
 import com.example.communicationapp.http.PositionService;
 import com.example.communicationapp.util.DeviceUtil;
 import com.example.communicationapp.util.HttpServiceCreator;
 import com.example.communicationapp.util.LocationUtil;
-import com.example.communicationapp.util.LoginUtil;
 import com.example.communicationapp.view.MainActivity;
 import com.example.communicationapp.R;
 
 import androidx.annotation.Nullable;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class GetPositionService extends Service {
-
-    private LocationUtil locationUtil;
     final PositionService positionService = HttpServiceCreator.create(PositionService.class);
 
-    public GetPositionService(){
-    }
 
     @Nullable
     @Override
@@ -44,16 +42,16 @@ public class GetPositionService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public void onCreate() {
+        super.onCreate();
 
-//        getSharedPreferences("", );
-
-        locationUtil = new LocationUtil(getApplicationContext());
-        locationUtil.setLocationListener(new AMapLocationListener(){
+        LocationUtil.getInstance().setLocationListener(new AMapLocationListener(){
 
             @Override
             public void onLocationChanged(AMapLocation aMapLocation) {
+                Log.d("lwd", "enter onLocationChanged");
                 if (aMapLocation != null) {
+
                     if (aMapLocation.getErrorCode() == 0) {
                         //可在其中解析amapLocation获取相应内容。
                         double latitude = aMapLocation.getLatitude();//获取纬度
@@ -69,13 +67,44 @@ public class GetPositionService extends Service {
                                 + aMapLocation.getErrorCode() + ", errInfo:"
                                 + aMapLocation.getErrorInfo());
                     }
-                    sendRequest(new Position(aMapLocation));
+//                    sendRequest(new Position(aMapLocation));
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            PositionData positionData = new PositionData(aMapLocation);
+                            long insertedId = MyDatabaseHelper.getInstance(GetPositionService.this).getPositionDao().insert(positionData);
+                            Log.d("lwd", "insertedId:" + insertedId);
+                        }
+                    }).start();
 
                 }
 
             }
         });
-        locationUtil.startLocation();
+        LocationUtil.getInstance().startLocation();
+
+//        Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                // 在这里编写定时执行的任务逻辑
+//                Log.d("lwd", "Timer print " + System.currentTimeMillis());
+//                LocationUtil.getInstance().startLocation();
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                LocationUtil.getInstance().stopLocation();
+//            }
+//        }, 0, 1000);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+
 
         createNotification();
 
@@ -88,7 +117,7 @@ public class GetPositionService extends Service {
         NotificationManager notificationManager= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         NotificationChannel channel = null;
         Intent intent1 = new Intent(this, MainActivity.class);
-        PendingIntent intent2 = PendingIntent.getActivity(this, 0, intent1,0);
+        PendingIntent intent2 = PendingIntent.getActivity(this, 0, intent1, PendingIntent.FLAG_MUTABLE);
 
         Notification.Builder builder = new Notification.Builder(this);
         //Android8.0要求设置通知渠道
@@ -123,7 +152,7 @@ public class GetPositionService extends Service {
             public void onResponse(Call<Position> call, Response<Position> response) {
                 Position position = response.body();
                 if(position != null){
-                    Log.d("lwd", "发送数据成功 latitude：" + position.latitude + " longitude:" + position.longitude);
+                    Log.d("lwd", "发送数据成功 latitude：" + position.getLatitude() + " longitude:" + position.getLongitude());
                 }
             }
 
